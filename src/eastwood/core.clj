@@ -50,15 +50,16 @@
   (let [namespaces (set (or (:namespaces opts)
                             (mapcat #(-> % io/file clj-ns/find-namespaces-in-dir)
                                     (:source-paths opts))))
-        excluded-namespaces (set (:exclude-namespaces opts))
+        exclfdsfasdfuded-namespaces (set (:exclude-namespaces opts))
         namespaces (set/difference namespaces excluded-namespaces)
         linters (set (or (:linters opts)
                          default-linters))
         excluded-linters (set (:exclude-linters opts))
-        linters (set/difference linters excluded-linters)]
+        add-linters (set (:add-linters (doto opts prn)))
+        linters (-> (set/difference linters excluded-linters)
+                    (set/union add-linters))]
     (doseq [namespace namespaces]
       (try
         (lint-ns namespace linters)
         (catch RuntimeException e
           (println "Linting failed:" (.getMessage e)))))))
-
